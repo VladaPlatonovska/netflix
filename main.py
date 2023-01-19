@@ -2,34 +2,25 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-# frame_t = pd.read_csv('titles.csv')
+# task 1
+frame_t = pd.read_csv('titles.csv')
 fr = pd.read_csv('titles.csv', index_col='type')
-# dict_m = {}
-# a = frame_t[['type', 'imdb_score']]
-# # print(a)
-# m_type = frame_t.loc[:, 'type']
-# imdb_score = frame_t.loc[:, 'imdb_score']
-# for t in m_type:
-#     if t not in dict_m.keys():
-#         dict_m[t] = []
-# imdb_movies = []
-# # print(dict_m)
-
 movies = fr.loc['MOVIE', 'imdb_score']
 shows = fr.loc['SHOW', 'imdb_score']
-plt.xticks(np.arange(0, 11, 0.2))
-# plt.step(10, 100)
+
 plt.subplot(1, 2, 1)
-plt.hist(movies)
+plt.hist(movies, 50)  # step should be 0.2 -> 10/0.2 = 50
 plt.subplot(1, 2, 2)
-plt.hist(shows)
+plt.hist(shows, 50)
 plt.show()
-# print(movies)
-# print(imdb_movies)
 
 
-# print(imdb_score)
-# plt.hist(imdb_score)
-# plt.axis([0, 10, 0, 120])
-# plt.show()
-
+# task 2
+age = frame_t.loc[:, 'age_certification']
+age_r = {}
+for r in age:
+    if r not in age_r.keys():
+        age_r[r] = 0
+    age_r[r] += 1
+plt.pie(age_r.values(), labels=age_r.keys())
+plt.show()
