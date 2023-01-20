@@ -70,6 +70,19 @@ plt.ylabel('percent of successful shows/movies')
 plt.show()
 
 
+# task 4
+top_m = frame_t[['id', 'genres', 'imdb_score']]
+top_1000 = top_m.sort_values(by='imdb_score', ascending=False).head(1000)
+frame_c = pd.read_csv('credits.csv')
+top_act = {}
+people = frame_c[['id', 'name', 'role']]
+only_actors = people[people['role'] == 'ACTOR']
+merged_d = pd.merge(top_1000, only_actors, how='inner', on=['id'])
+
+top10_act = merged_d.groupby(by='name')['id'].count().sort_values(ascending=False).head(10)
+print(top10_act)
+
+
 # task 5
 top_m = frame_t[['id', 'genres', 'imdb_score']]
 sorted_top = top_m.sort_values(by='imdb_score', ascending=False)
