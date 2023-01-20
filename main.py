@@ -8,6 +8,7 @@ fr = pd.read_csv('titles.csv', index_col='type')
 movies = fr.loc['MOVIE', 'imdb_score']
 shows = fr.loc['SHOW', 'imdb_score']
 
+plt.figure(figsize=(12, 8))
 plt.rc('xtick', labelsize=5)
 plt.subplot(1, 2, 1)
 plt.xticks(np.arange(0, 10, 0.2), rotation='vertical')
@@ -15,6 +16,7 @@ plt.hist(movies, 50)  # step should be 0.2 -> 10/0.2 = 50
 plt.xlabel("IMDB score")
 plt.ylabel("Number of movies")
 plt.xticks(np.arange(0, 10, 0.2), rotation='vertical')
+plt.axvline(movies.mean(), color='sienna', linestyle='dashed', linewidth=1)
 
 
 plt.subplot(1, 2, 2)
@@ -23,6 +25,7 @@ plt.xticks(np.arange(0, 10, 0.2), rotation='vertical')
 plt.hist(shows, 50)
 plt.xlabel("IMDB score")
 plt.ylabel("Number of shows")
+plt.axvline(shows.mean(), color='sienna', linestyle='dashed', linewidth=1)
 plt.show()
 
 
@@ -66,3 +69,42 @@ plt.ylabel('percent of successful shows/movies')
 plt.show()
 
 
+# task 5
+top_m = frame_t[['id', 'genres', 'imdb_score']]
+sorted_top = top_m.sort_values(by='imdb_score', ascending=False)
+top_1000 = sorted_top[:1000]
+
+dict_genres = {}
+for t in top_1000['genres']:
+    g = t.split(' ')
+
+    for gen in g:
+        if len(gen) > 3:
+            if gen[0] == '[':
+                gen = gen[2:]
+            elif gen[0] == "'":
+                gen = gen[1:]
+
+            if gen[-1] == ']' or gen[-1] == ',':
+                gen = gen[:-2]
+            elif gen[-1] == "'":
+                gen = gen[:-1]
+        if gen == '[]':
+            gen = 'none'
+        if gen not in dict_genres.keys():
+            dict_genres[gen] = 0
+
+        dict_genres[gen] += 1
+
+
+ax = plt.barh(list(dict_genres.keys()), dict_genres.values())
+plt.xlabel('number of shows/movies')
+plt.ylabel('genres')
+plt.tight_layout()
+for i in ax.patches:
+    plt.text(i.get_width(), i.get_y() + 0.2,
+             str(round((i.get_width()), 2)),
+             fontsize=8, color='black', ha='left', va='baseline')
+plt.show()
+
+# plt.text(x, y, text, other things)
