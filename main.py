@@ -8,14 +8,17 @@ fr = pd.read_csv('titles.csv', index_col='type')
 movies = fr.loc['MOVIE', 'imdb_score']
 shows = fr.loc['SHOW', 'imdb_score']
 
+plt.rc('xtick', labelsize=5)
 plt.subplot(1, 2, 1)
-
 plt.xticks(np.arange(0, 10, 0.2), rotation='vertical')
 plt.hist(movies, 50)  # step should be 0.2 -> 10/0.2 = 50
 plt.xlabel("IMDB score")
 plt.ylabel("Number of movies")
-plt.subplot(1, 2, 2)
+plt.xticks(np.arange(0, 10, 0.2), rotation='vertical')
 
+
+plt.subplot(1, 2, 2)
+plt.rc('xtick', labelsize=5)
 plt.xticks(np.arange(0, 10, 0.2), rotation='vertical')
 plt.hist(shows, 50)
 plt.xlabel("IMDB score")
@@ -30,7 +33,7 @@ for r in age:
     if r not in age_r.keys():
         age_r[r] = 0
     age_r[r] += 1
-
+plt.rc('xtick', labelsize=10)
 plt.pie(age_r.values(), labels=age_r.keys())
 plt.show()
 
@@ -56,7 +59,7 @@ highest_percent = max(av_year.values())
 best_year = max(av_year, key=av_year.get)
 print(f'the best year was {best_year} with {int(highest_percent)}% of successful projects')
 
-
+plt.rc('xtick', labelsize=10)
 plt.bar(av_year.keys(), av_year.values())
 plt.xlabel('years')
 plt.ylabel('percent of successful shows/movies')
