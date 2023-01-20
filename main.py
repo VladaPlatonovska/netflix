@@ -61,6 +61,7 @@ for key, value in year_d.items():
 highest_percent = max(av_year.values())
 best_year = max(av_year, key=av_year.get)
 print(f'the best year was {best_year} with {int(highest_percent)}% of successful projects')
+plt.axhline(highest_percent, color='sienna', linestyle='dashed', linewidth=1)
 
 plt.rc('xtick', labelsize=10)
 plt.bar(av_year.keys(), av_year.values())
