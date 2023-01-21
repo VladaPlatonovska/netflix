@@ -56,38 +56,28 @@ plt.show()
 top_1000 = titles.sort_values(by='imdb_score', ascending=False).head(1000)
 merged_d = pd.merge(top_1000, credits[credits['role'] == 'ACTOR'], how='inner', on=['id'])
 top10_act = merged_d.groupby(by='name')['id'].count().sort_values(ascending=False).head(10)
-print(top10_act)
+print(f'TOP-10 ACTORS\n{top10_act.to_string(header=False)}')
 
 
 # task 5
-top_m = titles[['id', 'genres', 'imdb_score']]
-sorted_top = top_m.sort_values(by='imdb_score', ascending=False)
-top_1000 = sorted_top[:1000]
+top_1000 = titles.sort_values(by='imdb_score', ascending=False).head(1000)
+genres_d = {}
 
-dict_genres = {}
 for t in top_1000['genres']:
-    g = t.split(' ')
+    no_comma = t.replace(',', '')
+    no_marks = no_comma.replace("'", '')
+    no_par = no_marks.strip("[]").split(' ')
+    for genre in no_par:
+        if genre == '':
+            genre = 'none'
+        if genre not in genres_d.keys():
+            genres_d[genre] = 0
 
-    for gen in g:
-        if len(gen) > 3:
-            if gen[0] == '[':
-                gen = gen[2:]
-            elif gen[0] == "'":
-                gen = gen[1:]
+        genres_d[genre] += 1
 
-            if gen[-1] == ']' or gen[-1] == ',':
-                gen = gen[:-2]
-            elif gen[-1] == "'":
-                gen = gen[:-1]
-        if gen == '[]':
-            gen = 'none'
-        if gen not in dict_genres.keys():
-            dict_genres[gen] = 0
+data_genres = pd.DataFrame(({'genres': genres_d.keys(), 'number_of_pr': genres_d.values()}))
 
-        dict_genres[gen] += 1
-
-
-ax = plt.barh(list(dict_genres.keys()), dict_genres.values())
+ax = plt.barh(data_genres['genres'], data_genres['number_of_pr'])
 plt.xlabel('number of shows/movies')
 plt.ylabel('genres')
 plt.tight_layout()
@@ -96,5 +86,3 @@ for i in ax.patches:
              str(round((i.get_width()), 2)),
              fontsize=8, color='black', ha='left', va='baseline')
 plt.show()
-
-# plt.text(x, y, text, other things)
