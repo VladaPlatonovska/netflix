@@ -40,37 +40,14 @@ plt.show()
 
 
 # task 3
-year = titles[['release_year', 'imdb_score']]
-
 years = titles[titles['release_year'] > 1999]
-y = years.groupby(by='release_year').co
-print(y)
+y = years[years['imdb_score'] >= 8.0].dropna()
+years_grouped = years.groupby(by='release_year')['release_year'].count().sort_index()
+years_g_score = y.groupby(by='release_year')['imdb_score'].count().sort_index()
+s = pd.DataFrame({'lab': years_grouped.keys(), 'val': ((years_g_score / years_grouped)*100)})
 
-
-
-year_d = {}
-for ind in year.index:
-    if int(year['release_year'][ind]) > 1999:
-        if year['release_year'][ind] not in year_d.keys():
-            year_d[year['release_year'][ind]] = [[], []]
-
-        year_d[year['release_year'][ind]][0].append(year['imdb_score'][ind])
-        if float(year['imdb_score'][ind]) >= 8.0:
-            year_d[year['release_year'][ind]][1].append(year['imdb_score'][ind])
-
-av_year = {}
-for key, value in year_d.items():
-    av_year[key] = (len(value[1]) / len(value[0])) * 100
-
-highest_percent = max(av_year.values())
-best_year = max(av_year, key=av_year.get)
-print(f'the best year was {best_year} with {int(highest_percent)}% of successful projects')
-
-plt.rc('xtick', labelsize=10)
-bar_list = plt.bar(av_year.keys(), av_year.values())
-bar_list[int(best_year) - 2000].set_facecolor('red')
-plt.xlabel('years')
-plt.ylabel('percent of successful shows/movies')
+bar_list = plt.bar(x=s['lab'], height=s['val'])
+bar_list[int(s["lab"][s["val"] == max(s["val"])]) - 2000].set_facecolor('red')
 plt.show()
 
 
