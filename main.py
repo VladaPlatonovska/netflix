@@ -1,48 +1,52 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
+
+
+titles = pd.read_csv('titles.csv')
+credits = pd.read_csv('credits.csv')
 
 # task 1
-frame_t = pd.read_csv('titles.csv')
-fr = pd.read_csv('titles.csv', index_col='type')
-movies = fr.loc['MOVIE', 'imdb_score']
-shows = fr.loc['SHOW', 'imdb_score']
+movies = titles[titles['type'] == 'MOVIE']['imdb_score'].dropna()
+shows = titles[titles['type'] == 'SHOW']['imdb_score'].dropna()
 
-plt.figure(figsize=(12, 8))
-plt.rc('xtick', labelsize=5)
-plt.subplot(1, 2, 1)
-plt.xticks(np.arange(0, 10, 0.2), rotation='vertical')
-plt.hist(movies, 50)  # step should be 0.2 -> 10/0.2 = 50
-plt.xlabel("IMDB score")
-plt.ylabel("Number of movies")
-plt.xticks(np.arange(0, 10, 0.2), rotation='vertical')
-plt.axvline(movies.mean(), color='sienna', linestyle='dashed', linewidth=1)
+m_mean = movies.mean()
+s_mean = shows.mean()
+if m_mean > s_mean:
+    print("movies' average mark is greater")
+else:
+    print("shows' average mark is greater")
 
+plt.figure(figsize=(10, 6))
+plt.axvline(m_mean, color='sienna', linestyle='dashed', linewidth=1)
 
-plt.subplot(1, 2, 2)
 plt.rc('xtick', labelsize=5)
 plt.xticks(np.arange(0, 10, 0.2), rotation='vertical')
-plt.hist(shows, 50)
 plt.xlabel("IMDB score")
-plt.ylabel("Number of shows")
-plt.axvline(shows.mean(), color='sienna', linestyle='dashed', linewidth=1)
+plt.ylabel("Number of shows/movies")
+plt.axvline(s_mean, color='blue', linestyle='dashed', linewidth=1)
+
+sns.histplot(titles, x='imdb_score', bins=np.arange(0, 10, 0.2), hue='type')
 plt.show()
 
 
 # task 2
-age = frame_t.loc[:, 'age_certification']
-age_r = {}
-for r in age:
-    if r not in age_r.keys():
-        age_r[r] = 0
-    age_r[r] += 1
-plt.rc('xtick', labelsize=10)
-plt.pie(age_r.values(), labels=age_r.keys())
+
+values = titles[titles['type'] == 'SHOW']['age_certification'].dropna()
+labels, values = np.unique(values, return_counts=True)
+plt.pie(values, labels=labels)
 plt.show()
 
 
 # task 3
-year = frame_t[['release_year', 'imdb_score']]
+year = titles[['release_year', 'imdb_score']]
+
+years = titles[titles['release_year'] > 1999]
+y = years.groupby(by='release_year').co
+print(y)
+
+
 
 year_d = {}
 for ind in year.index:
@@ -61,30 +65,25 @@ for key, value in year_d.items():
 highest_percent = max(av_year.values())
 best_year = max(av_year, key=av_year.get)
 print(f'the best year was {best_year} with {int(highest_percent)}% of successful projects')
-plt.axhline(highest_percent, color='sienna', linestyle='dashed', linewidth=1)
 
 plt.rc('xtick', labelsize=10)
-plt.bar(av_year.keys(), av_year.values())
+bar_list = plt.bar(av_year.keys(), av_year.values())
+bar_list[int(best_year) - 2000].set_facecolor('red')
 plt.xlabel('years')
 plt.ylabel('percent of successful shows/movies')
 plt.show()
 
 
 # task 4
-top_m = frame_t[['id', 'genres', 'imdb_score']]
-top_1000 = top_m.sort_values(by='imdb_score', ascending=False).head(1000)
-frame_c = pd.read_csv('credits.csv')
-top_act = {}
-people = frame_c[['id', 'name', 'role']]
-only_actors = people[people['role'] == 'ACTOR']
-merged_d = pd.merge(top_1000, only_actors, how='inner', on=['id'])
 
+top_1000 = titles.sort_values(by='imdb_score', ascending=False).head(1000)
+merged_d = pd.merge(top_1000, credits[credits['role'] == 'ACTOR'], how='inner', on=['id'])
 top10_act = merged_d.groupby(by='name')['id'].count().sort_values(ascending=False).head(10)
 print(top10_act)
 
 
 # task 5
-top_m = frame_t[['id', 'genres', 'imdb_score']]
+top_m = titles[['id', 'genres', 'imdb_score']]
 sorted_top = top_m.sort_values(by='imdb_score', ascending=False)
 top_1000 = sorted_top[:1000]
 
